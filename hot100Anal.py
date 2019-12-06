@@ -13,7 +13,7 @@ aggregation_f = {'date': 'first'}
 for feature in features:
 	aggregation_f[feature] = np.mean
 
-weeksPerPoint = 104
+weeksPerPoint = 156
 
 """result = {"date": []}
 for feature in features:
@@ -41,27 +41,26 @@ else:
 
 labels1 = ['danceability','energy','mode','valence']
 labels2 = ['speechiness','acousticness','liveness','instrumentalness']
-ax = plt.subplot(211)
+ax = plt.subplot(111)
 ax.set_xlabel('Date')
 ax.set_ylabel('Spotify Feature Value')
 for feature in labels1:
 	ax.plot(grouped[feature],'o-', label=feature)
-	#grouped[feature].plot(marker='o', label=feature)
-#plt.tight_layout()
-#plt.axes((0,0,1,1))
-#box = ax.get_position()
-#ax.set_position([box.x0, box.y0, box.width*.8, box.height])
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
-ax = plt.subplot(212)
+		
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize='small')
+plt.tight_layout()
+plt.show()
+
+"""ax = plt.subplot(212)
 ax.set_xlabel('Date')
 ax.set_ylabel('Spotify Feature Value')
 for feature in labels2:
 	ax.plot(grouped[feature],'o-', label=feature)
-#grouped['danceability'].plot(marker='o')
-plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
+#ax.plot(grouped['duration_ms'], 'o-')
+plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize='small')
 plt.tight_layout()
 plt.show()
-"""charts = {
+charts = {
 	pop: pickle.load(open('pop-songs','rb')),
 }
 
