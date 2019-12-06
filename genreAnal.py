@@ -104,7 +104,7 @@ plt.show()"""
 
 
 
-interval = 2
+interval = 20
 
 for i in range(2000, 2020, interval):
 	N = len(features)
@@ -134,8 +134,8 @@ for i in range(2000, 2020, interval):
 	# add legend relative to top-left plot
 	#ax = axes[0, 0]
 	labels = sorted(charts.keys())
-	legend = ax.legend(labels, loc=(0.9, .95),
-					   labelspacing=0.1, fontsize='small')
+	plt.legend(labels, bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize='small')
+	plt.tight_layout()
 
 	plt.show()
 
