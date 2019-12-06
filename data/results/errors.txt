@@ -1,0 +1,9 @@
+hot100      = 300, 2447 out of 104200 --> 101753 = 2.34% error
+edm         = 87, 507   out of 18000  --> 17493  = 2.81% error
+alternative = 46, 497   out of 41680  --> 41183  = 1.19% error
+christian   = 119, 1130 out of 38440  --> 37310  = 2.93% error
+country     = 149, 1624 out of 52100  --> 50476  = 3.11% error
+jazz        = 131, 1817 out of 22170  --> 20353  = 8.19% error
+pop         = 37, 369   out of 41680  --> 41311  = 0.88% error
+rnbHipHop   = 108, 1383 out of 52100  --> 50717  = 2.65% error
+rock        = ?  , 187  out of 27400  --> 27213  = 0.68% error
