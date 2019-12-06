@@ -24,7 +24,7 @@ for j, date in enumerate(["2000-11-11", "2000-12-11", "2001-01-11", "2001-02-11"
 		for k, feature in enumerate(features):
 			result[feature].append(random.random())"""
 
-df = pickle.load(open('data/results/hot100.df', 'rb')).reset_index()
+df = pickle.load(open('../data/results/hot100.df', 'rb')).reset_index()
 df['date'] = pd.to_datetime(df['date'])
 grouped = df.groupby('date')[features].agg(np.mean).reset_index()
 
