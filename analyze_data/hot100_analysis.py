@@ -39,12 +39,13 @@ if weeksPerPoint > 1:
 else:
 	grouped = grouped.set_index('date')
 
+test = ['loudness']
 labels1 = ['danceability','energy','mode','valence']
 labels2 = ['speechiness','acousticness','liveness','instrumentalness']
 ax = plt.subplot(111)
 ax.set_xlabel('Date')
 ax.set_ylabel('Spotify Feature Value')
-for feature in labels1:
+for feature in test:
 	ax.plot(grouped[feature],'o-', label=feature)
 		
 plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0., fontsize='small')
