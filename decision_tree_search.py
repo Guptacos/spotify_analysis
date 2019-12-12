@@ -1,5 +1,5 @@
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import KFold, GridSearchCV, train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import KFold
 from sklearn import metrics
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -29,7 +29,7 @@ def maxDepthSearch(features, labels, n_splits, vals):
 	accs = [0]*len(vals)
 	for j, (train_idx, test_idx) in enumerate(kf.split(features)):
 		for i, val in enumerate(vals):
-			DT = RandomForestClassifier(max_depth=val)
+			DT = DecisionTreeClassifier(max_depth=val)
 			DT = DT.fit(features[train_idx], labels[train_idx])
 			label_pred = DT.predict(features[test_idx])
 			accs[i]+= metrics.accuracy_score(labels[test_idx], label_pred)
@@ -37,16 +37,16 @@ def maxDepthSearch(features, labels, n_splits, vals):
 
 	for i in range(len(accs)):
 		accs[i] = accs[i]/n_splits*100
-		print(f"Accuracy for max_depth={vals[i]}: {accs[i]}")
+		print(f"Accuracy for {vals[i]}: {accs[i]}")
 
 	return accs
 
-def numEstimatorsSearch(features, labels, n_splits, vals):
+def maxFeaturesSearch(features, labels, n_splits, vals):
 	kf = KFold(n_splits)
 	accs = [0]*len(vals)
 	for j, (train_idx, test_idx) in enumerate(kf.split(features)):
 		for i, val in enumerate(vals):
-			DT = RandomForestClassifier(n_estimators=val)
+			DT = DecisionTreeClassifier(max_features=val)
 			DT = DT.fit(features[train_idx], labels[train_idx])
 			label_pred = DT.predict(features[test_idx])
 			accs[i]+= metrics.accuracy_score(labels[test_idx], label_pred)
@@ -54,49 +54,54 @@ def numEstimatorsSearch(features, labels, n_splits, vals):
 
 	for i in range(len(accs)):
 		accs[i] = accs[i]/n_splits*100
-		print(f"Accuracy for n_estimators={vals[i]}: {accs[i]}")
+		print(f"Accuracy for {vals[i]}: {accs[i]}")
+
+	return accs
+
+def minImpuritySearch(features, labels, n_splits, vals):
+	kf = KFold(n_splits)
+	accs = [0]*len(vals)
+	for j, (train_idx, test_idx) in enumerate(kf.split(features)):
+		for i, val in enumerate(vals):
+			DT = DecisionTreeClassifier(min_impurity_decrease=val)
+			DT = DT.fit(features[train_idx], labels[train_idx])
+			label_pred = DT.predict(features[test_idx])
+			accs[i]+= metrics.accuracy_score(labels[test_idx], label_pred)
+		print(f"Split {j}: complete")
+
+	for i in range(len(accs)):
+		accs[i] = accs[i]/n_splits*100
+		print(f"Accuracy for {vals[i]}: {accs[i]}")
 
 	return accs
 
 def individualSearch():
-	depth_accs = maxDepthSearch(features, labels, 5, max_depth)
+	depth_accs = maxDepthSearch(features, labels, 10, max_depth)
 	plt.plot(max_depth, depth_accs)
 	plt.xlabel("Max Depth Parameter")
 	plt.ylabel("% Accuracy")
 	plt.title("Accuracy vs. Max Tree Depth")
 	plt.figure()
 
-
-	impurity_accs = numEstimatorsSearch(features, labels, 5, num_estimators)
-	plt.plot(num_estimators, impurity_accs)
-	plt.xlabel("Number of Estimators Parameter")
+	feats_accs = maxFeaturesSearch(features, labels, 10, feats)
+	feats[0] = "None"
+	plt.bar(feats, feats_accs)
+	plt.xlabel("Max Features Parameter")
 	plt.ylabel("% Accuracy")
-	plt.title("Accuracy vs. Number of Trees in the Forest ")
+	plt.title("Accuracy vs. Max Features")
+	plt.figure()
+
+
+	impurity_accs = minImpuritySearch(features, labels, 10, min_impurity_dec)
+	plt.plot(min_impurity_dec, impurity_accs)
+	plt.xscale('log')
+	plt.xlabel("Min Impurity Decrease Parameter")
+	plt.ylabel("% Accuracy")
+	plt.title("Accuracy vs. Min Impurity Decrease Parameter")
 	plt.show()
 
-#max_depth = [3, 5, 8, 12, 16, 20, 25, 30]
-#num_estimators = [20, 40, 60, 80, 100, 120, 140,160, 180, 200]
-#individualSearch()
 
-
-train_features, test_features, train_labels, test_labels = train_test_split(features, labels, test_size=.2)
-max_depth = [8, 12, 16, 20]
-num_estimators = [60, 100, 140, 200]
-
-grid = {
-	'max_depth': max_depth,
-	'n_estimators': num_estimators
-}
-
-RF = RandomForestClassifier()
-clf = GridSearchCV(RF, grid, n_jobs=-1, verbose=1)
-clf.fit(train_features, train_labels)
-print(clf.best_params_)
-label_pred = clf.predict(test_features)
-print(metrics.accuracy_score(test_labels, label_pred))
-
-
-"""def gridSearch(features, labels, n_splits, min_impurity_dec, max_feats):
+def gridSearch(features, labels, n_splits, min_impurity_dec, max_feats):
 	kf = KFold(n_splits)
 	accs = [[0 for i in range(len(max_feats))] for j in range(len(min_impurity_dec))]
 	for i, (train_idx, test_idx) in enumerate(kf.split(features)):
@@ -115,6 +120,10 @@ print(metrics.accuracy_score(test_labels, label_pred))
 
 	return accs
 
+max_depth = [3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20, 25, 30]
+feats = [None, 'sqrt', 'log2']
+min_impurity_dec = [0., 1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1, 1]
+
 accs = gridSearch(features, labels, 5, min_impurity_dec, feats)
 feats[0] = 'none'
 indices = list(map(str, min_impurity_dec))
@@ -127,4 +136,4 @@ plt.legend(labels)
 plt.legend(handles=[mpatches.Patch(color='b', label='Max Features=None'), mpatches.Patch(color='r', label='Max Features=Sqrt'), mpatches.Patch(color='g', label='Max Features=Log2')])
 plt.xlabel("Min Impurity Decrease Parameter")
 plt.ylabel("% Accuracy")
-plt.show()"""
+plt.show()

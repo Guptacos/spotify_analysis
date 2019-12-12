@@ -37,33 +37,36 @@ test_features = test_features.drop('position', axis=1).values
 decades = ['70s', '80s', '90s', '00s', '10s']
 #print("With Weights:")
 #decision tree
-model = DecisionTreeClassifier()
-model = model.fit(train_features, train_labels, train_weights)
-label_pred = model.predict(test_features)
+DT = DecisionTreeClassifier(max_depth=8)
+DT = DT.fit(train_features, train_labels, train_weights)
+label_pred = DT.predict(test_features)
 print(metrics.accuracy_score(test_labels, label_pred))
-print(list(zip(feature_cols[:-1],model.feature_importances_)))
-disp = metrics.plot_confusion_matrix(model, test_features, test_labels, display_labels=decades, normalize='true')
-disp.ax_.set_title('Decision Tree')
+print(list(zip(feature_cols[:-1],DT.feature_importances_)))
 
 #random forest
-model = RandomForestClassifier()
-model = model.fit(train_features, train_labels, train_weights)
-label_pred = model.predict(test_features)
+RF = RandomForestClassifier(n_estimators=160, max_depth=16)
+RF = RF.fit(train_features, train_labels, train_weights)
+label_pred = RF.predict(test_features)
 print(metrics.accuracy_score(test_labels, label_pred))
-print(list(zip(feature_cols[:-1],model.feature_importances_)))
-disp = metrics.plot_confusion_matrix(model, test_features, test_labels, display_labels=decades, normalize='true')
-disp.ax_.set_title('Random Forest')
+print(list(zip(feature_cols[:-1],RF.feature_importances_)))
+
 
 #gb decision tree
-model = xgb.XGBClassifier()
-model = model.fit(train_features, train_labels, train_weights)
-label_pred = model.predict(test_features)
+XGB = xgb.XGBClassifier()
+XGB = XGB.fit(train_features, train_labels, train_weights)
+label_pred = XGB.predict(test_features)
 print(metrics.accuracy_score(test_labels, label_pred))
-print(list(zip(feature_cols[:-1],model.feature_importances_)))
-disp = metrics.plot_confusion_matrix(model, test_features, test_labels, display_labels=decades, normalize='true')
-disp.ax_.set_title('Gradient Boosted Tree')
-plt.show()
+print(list(zip(feature_cols[:-1],XGB.feature_importances_)))
 
+
+def showConfusionMatrix(model, title):
+	disp = metrics.plot_confusion_matrix(model, test_features, test_labels, display_labels=decades, normalize='true')
+	disp.ax_.set_title(title)
+
+showConfusionMatrix(DT, 'Decision Tree')
+showConfusionMatrix(RF, 'Random Forest')
+showConfusionMatrix(XGB, 'Gradient Boosted Decision Tree')
+plt.show()
 
 """print("\nWithout Weights:")
 model = DecisionTreeClassifier()
